@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -f /opt/ssh/authorized_keys ];then
+    echo "Creating /opt/ssh/authorized_keys"
+    touch /opt/ssh/authorized_keys
+fi
+
+if [ ! -z "$PUBLIC_KEY" ]; then
+    echo "Appending key"
+    echo $PUBLIC_KEY >> /opt/ssh/authorized_keys
+fi

@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -f /opt/ssh/sshd_config ];then
+    echo "Copy sshd_config..."
+    cp /tmp/sshd_config /opt/ssh/sshd_config
+fi
