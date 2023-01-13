@@ -1,5 +1,3 @@
-FROM mutagenio/sidecar:0.16.3 AS mutagen
-
 FROM kubeflownotebookswg/base:v1.6.0-rc.0
 
 USER root
@@ -17,7 +15,12 @@ COPY ./s6/cont-init.d/30-copy-authorized-key /etc/cont-init.d/30-copy-authorized
 COPY ./s6/services.d/openssh-server /etc/services.d/openssh-server
 COPY ./config/sshd_config /tmp/sshd_config
 
-COPY --from=mutagen /root/.mutagen /home/jovyan/.mutagen
+RUN mkdir -p /tmp/mutagen \
+  && wget -qO- https://github.com/mutagen-io/mutagen/releases/download/v0.16.3/mutagen_linux_amd64_v0.16.3.tar.gz | tar xz -C /tmp/mutagen \
+  && tar xzf /tmp/mutagen/mutagen-agents.tar.gz -C /tmp/mutagen \
+  && /tmp/mutagen/linux_amd64 install \
+  && rm -rf /tmp/mutagen
+
 RUN chown -R ${NB_USER}:users /home/jovyan/.mutagen
 
 RUN mkdir /opt/ssh && \
