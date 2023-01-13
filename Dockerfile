@@ -1,4 +1,4 @@
-FROM mutagenio/sidecar:0.16.1 AS mutagen
+FROM mutagenio/sidecar:0.16.3 AS mutagen
 
 FROM kubeflownotebookswg/base:v1.6.0-rc.0
 
