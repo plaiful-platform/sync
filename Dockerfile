@@ -1,5 +1,7 @@
 FROM kubeflownotebookswg/base:v1.6.0-rc.0
 
+ARG MUTAGEN_VERSION=v0.16.3
+
 USER root
 
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -16,10 +18,15 @@ COPY ./s6/services.d/openssh-server /etc/services.d/openssh-server
 COPY ./config/sshd_config /tmp/sshd_config
 
 RUN mkdir -p /tmp/mutagen \
-  && wget -qO- https://github.com/mutagen-io/mutagen/releases/download/v0.16.3/mutagen_linux_amd64_v0.16.3.tar.gz | tar xz -C /tmp/mutagen \
+  && wget -qO- https://github.com/mutagen-io/mutagen/releases/download/v0.16.3/mutagen_linux_amd64_${MUTAGEN_VERSION}.tar.gz | tar xz -C /tmp/mutagen \
   && tar xzf /tmp/mutagen/mutagen-agents.tar.gz -C /tmp/mutagen \
-  && /tmp/mutagen/linux_amd64 install \
+  && mkdir -p /home/${NB_USER}/.mutagen/agents/${MUTAGEN_VERSION} \
+  && mv /tmp/mutagen/linux_amd64 /home/${NB_USER}/.mutagen/agents/${MUTAGEN_VERSION} \
   && rm -rf /tmp/mutagen
+
+COPY ./scripts/mutagen-agent /home/${NB_USER}/.mutagen/agents/${MUTAGEN_VERSION}
+
+RUN chmod +x /home/${NB_USER}/.mutagen/agents/${MUTAGEN_VERSION}/mutagen-agent
 
 RUN chown -R ${NB_USER}:users /home/jovyan/.mutagen
 
